@@ -1,0 +1,119 @@
+html * {
+  box-sizing: border-box;
+  -webkit-transition: 0.5s ease-in-out;
+  transition: 0.5s ease-in-out; }
+
+*:before, *:after {
+  box-sizing: border-box;
+  -webkit-transition: 0.5s ease-in-out;
+  transition: 0.5s ease-in-out; }
+
+.swipe {
+  cursor: pointer;
+  position: relative;
+  display: block;
+  border: 1px solid currentColor;
+  color: #84af1b; }
+  .swipe:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -2.5rem;
+    bottom: 0;
+    left: 0;
+    border-right: 2.5rem solid transparent;
+    border-bottom: 2.5rem solid #84af1b;
+    -webkit-transform: translateX(-100%);
+    transform: translateX(-100%); }
+  .swipe:hover {
+    color: white; }
+    .swipe:hover:before {
+      -webkit-transform: translateX(0);
+      transform: translateX(0); }
+
+body {
+  background: #eeeeee; }
+
+.item .left {
+  position: absolute;
+  width: 50px;
+  height: 150px;
+  color: white;
+  text-align: center;
+  font-size: 2rem;
+  padding-top: 10px;
+  background-color: #84af1b; }
+
+.item header {
+  width: 100%;
+  position: relative; }
+  .item header .star {
+    display: inline;
+    position: absolute;
+    right: 0;
+    top: 0;
+    text-align: center;
+    overflow: hidden;
+    line-height: 2.5rem;
+    min-width: 2.5rem;
+    background: #dadada;
+    /*background : rgb(132, 175, 27);*/
+    color: white; }
+
+.items {
+  margin: 0 -20px;
+  display: flex;
+  flex-wrap: wrap; }
+
+.item {
+  position: relative;
+  width: calc(50% - 40px);
+  background: white;
+  /*border : 10px solid rgb(221, 221, 221);*/
+  margin: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px;
+  /*border-left : 50px solid rgb(218, 218, 218);*/
+  border-left: 50px solid #84af1b;
+  box-shadow: 3px 1px 3px #c6c6c6; }
+  .item dl {
+    vertical-align: text-top;
+    width: 100%;
+    margin-bottom: 0; }
+    .item dl * {
+      line-height: 2rem; }
+    .item dl dt {
+      vertical-align: text-top;
+      display: inline-block;
+      font-size: 1rem;
+      width: 2.5rem;
+      text-align: right;
+      padding-right: .5rem;
+      color: #c7c7c7; }
+    .item dl dd {
+      vertical-align: text-top;
+      display: inline-block;
+      width: calc(100% - 3rem); }
+  .item > .detail {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%; }
+    .item > .detail > div {
+      width: 25%; }
+  .item h1 {
+    font-size: 1.5rem;
+    line-height: 2rem;
+    padding-right: 2.5rem;
+    color: #84af1b;
+    margin: 0;
+    margin-bottom: 10px; }
+
+nav {
+  width: 80%;
+  margin: 30px 0;
+  color: #939393;
+  font-size: 2rem;
+  /*display: flex ;
+  flex-wrap: wrap;*/ }
