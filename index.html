@@ -14,17 +14,19 @@
 
             <p class="pull-left">獨立音樂活動清單</p>
             <div class="pull-right">
-                <span class="glyphicon glyphicon-th-large" @click="filter('all')"></span>
-                <span class="glyphicon glyphicon-star" @click="filter('star')"></span>
+                <span class="glyphicon glyphicon-th-large" @click="control.filter = 'all' "></span>
+                <span class="glyphicon glyphicon-star"     @click="control.filter = 'star' "></span>
                 <span>|</span>
-                <span class="glyphicon glyphicon-time" @click="sort('time')"></span>
-                <input type="text" @keyup="filter('search')" v-model="search">
+                <span class="glyphicon glyphicon-time"     @click="control.sort   = 'time' "></span>
+                <span class="glyphicon glyphicon-tag"      @click="control.sort   = 'price' "></span>
+
+                <input type="text" v-model="control.search">
             </div>
         </nav>
 
         <main class="container">
             <div class="items">
-                <article class="item" v-for="s in current">
+                <article class="item" v-for="s in current_activities">
 
                     <header>
                         <h1>{{s.title}}</h1>
@@ -51,15 +53,12 @@
                 </article>
             </div
             <footer class="container">
-                <span v-if="current && current.length ">{{total}}</span >
+                <span v-if="current_activities && current_activities.length ">{{total}}</span >
                 <span v-else>目前還沒有資料。</span >
 
             </footer>
         </main>
     </div>
-
-
-
 
 
 
@@ -77,57 +76,65 @@
             window.app = new Vue({
                 el : "#app",
                 data : {
-                    all : json ,
-                    current  : json.slice() ,
-                    favorate : {}
-                    // search : ""
+                    activities : json ,
+                    favorate : {},
+                    control : {
+                        search : "" ,
+                        sort : "" ,
+                        filter : "" ,
+                    }
                 },
                 methods : {
                     select : function (s){
                         this.$set(this.favorate, s.UID , this.favorate[s.UID] ?  false : true )
                         console.log(this.favorate)
-
-                    },
-
-                    filter : function(option){
-                        var vm = this
-                        switch (option){
-                            case "star" :
-                                vm.current = vm.all.filter(function(s){
-                                    return vm.favorate[s.UID]
-                                })
-                                break ;
-                            case "all" :
-                                vm.current = vm.all.slice()
-                                break ;
-                            case "search" :
-                                vm.current = vm.all.filter(function(s){
-                                    console.log("s.title",s.title,vm.search,s.title.toLowerCase().indexOf(vm.search))
-                                    return s.title.toLowerCase().indexOf(vm.search) > 0
-                                })
-                                console.log("search")
-                                break ;
-                        }
-                    },
-                    sort : function (option){
-                        var vm = this
-                        switch (option){
-                            case "time" :
-                                vm.$set(vm , "current" , vm.current.sort(function(a,b){
-                                    return b.showInfo[0].time.localeCompare(a.showInfo[0].time )
-                                })
-                                )
-                                console.log("a")
-                        }
                     }
                 },
                 computed : {
                     total : function (){
-                        return this.current.reduce(function (v,s){
+                        return this.current_activities.reduce(function (v,s){
                             var p = parseInt(s.showInfo[0].price)
                             console.log(p)
                             return v + (!isNaN(p) ? p : 0 )
                         },0)
+                    },
+                    current_activities : function (){
+                        var vm = this
+
+                        var current = []
+
+                        // filter
+                        switch (vm.control.filter){
+                            case "all" :
+                                current = vm.activities
+                                break
+                            case "star" :
+                                current = vm.activities.filter(function(s){
+                                    return vm.favorate[s.UID]
+                                })
+                        }
+                        // search
+                        if (vm.control.search && vm.control.search.length > 0 ){
+                            current = current.filter(function(s){
+                                // console.log("s.title",s.title,vm.control.search,s.title.toLowerCase().indexOf(vm.control.search))
+                                return s.title.toLowerCase().indexOf(vm.control.search.toLowerCase()) > -1
+                            })
+                        }
+                        // sort ?
+                        switch (vm.control.sort){
+                            case "time" :
+                                current = current.sort(function(a,b){
+                                    return b.showInfo[0].time.localeCompare(a.showInfo[0].time )
+                                })
+                                break ;
+                            case "price" :
+                                current = current.sort(function(b,a){
+                                    return b.showInfo[0].time.localeCompare(a.showInfo[0].time )
+                                })
+                                break ;
+                            default : break ;
+                        }
+                        return current
                     }
                 }
             })
