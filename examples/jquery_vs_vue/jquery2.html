@@ -1,0 +1,33 @@
+<div id="app">
+
+</div>
+
+
+<div id="templates">
+    <article data-template="post" >
+        <p class="author"></p>
+        <span class="time"></span>
+        <div class="content"></div>
+    </article>
+</div>
+
+
+<script src="../../src/jquery.js"></script>
+<script>
+
+    $.getJSON("posts.json",function (dataArray){
+
+        for (var i = 0 ; i < dataArray.length ; i++){
+
+            var post = dataArray[i]
+
+            $postTemplate = $("#templates > [data-template='post']").clone()
+
+            $postTemplate.find(".author") .text(post.author)
+            $postTemplate.find(".time")   .text(post.time)
+            $postTemplate.find(".content").text(post.content)
+
+            $("#app").append($postTemplate)
+        }
+    })
+</script>

@@ -9,18 +9,18 @@
 
   <body >
     <div id="app">
-
         <nav class="container">
-
-            <p class="pull-left">獨立音樂活動清單</p>
+            <h1 class="pull-left">獨立音樂活動清單</h1>
             <div class="pull-right">
                 <span class="glyphicon glyphicon-th-large" @click="control.filter = 'all' "></span>
                 <span class="glyphicon glyphicon-star"     @click="control.filter = 'star' "></span>
+                <!-- 改名成 tab  -->
                 <span>|</span>
                 <span class="glyphicon glyphicon-time"     @click="control.sort   = 'time' "></span>
                 <span class="glyphicon glyphicon-tag"      @click="control.sort   = 'price' "></span>
 
                 <input type="text" v-model="control.search">
+                <!-- 改名成 filter  -->
             </div>
         </nav>
 
@@ -30,72 +30,70 @@
 
                     <header>
                         <h1>{{s.title}}</h1>
-                        <div :class="'swipe star ' + (favorate[s.UID] ? 'true':'') " @click="select(s)">
+                        <div class="animation-swipe star" :class="{ favorite : favorate[s.uid] } " @click="toggle_like(s)">
                           <span class="glyphicon glyphicon-star"></span>
                         </div>
                     </header>
 
                     <dl>
                         <dt>時間</dt>
-                        <dd>{{s.showInfo[0].time}}</dd>
+                        <dd>{{s.time}}</dd>
                     </dl>
 
                     <dl>
                         <dt>價錢</dt>
-                        <dd>{{s.showInfo[0].price.substring(0,10)}}</dd>
+                        <dd>{{s.price}}</dd>
                     </dl>
 
                     <dl>
                         <dt>地點</dt>
-                        <dd>{{s.showInfo[0].location}}</dd>
+                        <dd>{{s.address}}</dd>
                     </dl>
 
                 </article>
-            </div
-            <footer class="container">
-                <span v-if="current_activities && current_activities.length ">{{total}}</span >
-                <span v-else>目前還沒有資料。</span >
-
-            </footer>
+            </div>
         </main>
+
+        <footer class="container">
+            <span v-if="current_activities && current_activities.length ">{{total}}</span >
+            <span v-else>目前還沒有資料。</span >
+        </footer>
+
     </div>
 
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.2.6/vue.js"></script>
     <script>
 
-        $.getJSON("./show.json",function(json){
-            console.log(json)
-            json.forEach(function(s){
-                s.selected = false
-            })
+        $.getJSON("./show.min.json",function(json){
+
             window.app = new Vue({
                 el : "#app",
                 data : {
                     activities : json ,
                     favorate : {},
                     control : {
-                        search : "" ,
+                        search : "" , //
                         sort : "" ,
-                        filter : "" ,
+                        filter : "all" ,
                     }
                 },
                 methods : {
-                    select : function (s){
-                        this.$set(this.favorate, s.UID , this.favorate[s.UID] ?  false : true )
+                    toggle_like : function (s){
+                        this.$set(this.favorate, s.uid , this.favorate[s.uid] ?  false : true )
                         console.log(this.favorate)
                     }
                 },
                 computed : {
                     total : function (){
+                        // 用簡單的好了 . . .
                         return this.current_activities.reduce(function (v,s){
-                            var p = parseInt(s.showInfo[0].price)
-                            console.log(p)
-                            return v + (!isNaN(p) ? p : 0 )
+                            var p = parseInt(s.price)
+                            return v + p
                         },0)
                     },
                     current_activities : function (){
@@ -110,26 +108,27 @@
                                 break
                             case "star" :
                                 current = vm.activities.filter(function(s){
-                                    return vm.favorate[s.UID]
+                                    return vm.favorate[s.uid]
                                 })
                         }
                         // search
                         if (vm.control.search && vm.control.search.length > 0 ){
                             current = current.filter(function(s){
-                                // console.log("s.title",s.title,vm.control.search,s.title.toLowerCase().indexOf(vm.control.search))
-                                return s.title.toLowerCase().indexOf(vm.control.search.toLowerCase()) > -1
+                                var search = vm.control.search.toLowerCase()
+                                var title = s.title.toLowerCase()
+                                return title.indexOf(search) > -1
                             })
                         }
                         // sort ?
                         switch (vm.control.sort){
                             case "time" :
                                 current = current.sort(function(a,b){
-                                    return b.showInfo[0].time.localeCompare(a.showInfo[0].time )
+                                    return a.time.localeCompare(b.time )
                                 })
                                 break ;
                             case "price" :
-                                current = current.sort(function(b,a){
-                                    return b.showInfo[0].time.localeCompare(a.showInfo[0].time )
+                                current = current.sort(function(a,b){
+                                    return parseInt(a.price) - parseInt(b.price)
                                 })
                                 break ;
                             default : break ;
