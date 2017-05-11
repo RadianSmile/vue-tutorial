@@ -11,16 +11,18 @@
     <div id="app">
         <nav class="container">
             <h1 class="pull-left">獨立音樂活動清單</h1>
+
+            <div class="pull-left">
+                <!-- 不同的分頁 -->
+                <span class="glyphicon glyphicon-th-large" @click="control.tab = 'all' "></span>
+                <span class="glyphicon glyphicon-star"     @click="control.tab = 'star' "></span>
+            </div>
+
             <div class="pull-right">
-                <span class="glyphicon glyphicon-th-large" @click="control.filter = 'all' "></span>
-                <span class="glyphicon glyphicon-star"     @click="control.filter = 'star' "></span>
-                <!-- 改名成 tab  -->
-                <span>|</span>
+                <!-- 不同的過濾器 -->
                 <span class="glyphicon glyphicon-time"     @click="control.sort   = 'time' "></span>
                 <span class="glyphicon glyphicon-tag"      @click="control.sort   = 'price' "></span>
-
-                <input type="text" v-model="control.search">
-                <!-- 改名成 filter  -->
+                <input type="text" v-model="control.filter" placeholder="過濾器">
             </div>
         </nav>
 
@@ -77,9 +79,9 @@
                     activities : json ,
                     favorate : {},
                     control : {
-                        search : "" , //
+                        filter : "" ,
                         sort : "" ,
-                        filter : "all" ,
+                        tab : "" ,
                     }
                 },
                 methods : {
@@ -90,19 +92,24 @@
                 },
                 computed : {
                     total : function (){
-                        // 用簡單的好了 . . .
-                        return this.current_activities.reduce(function (v,s){
-                            var p = parseInt(s.price)
-                            return v + p
-                        },0)
+
+                        var sum
+                        for (var i = 0 ; i < this.current_activities.length ; i++)
+                            sum += this.current_activities[i]
+                        return sum
+
+                        // return this.current_activities.reduce(function (v,s){
+                        //     var p = parseInt(s.price)
+                        //     return v + p
+                        // },0)
                     },
                     current_activities : function (){
-                        var vm = this
 
+                        var vm = this
                         var current = []
 
-                        // filter
-                        switch (vm.control.filter){
+                        // Tab
+                        switch (vm.control.tab){
                             case "all" :
                                 current = vm.activities
                                 break
@@ -111,15 +118,17 @@
                                     return vm.favorate[s.uid]
                                 })
                         }
-                        // search
-                        if (vm.control.search && vm.control.search.length > 0 ){
+
+                        // Filter
+                        if (vm.control.filter && vm.control.filter.length > 0 ){
                             current = current.filter(function(s){
                                 var search = vm.control.search.toLowerCase()
                                 var title = s.title.toLowerCase()
                                 return title.indexOf(search) > -1
                             })
                         }
-                        // sort ?
+
+                        // Sort
                         switch (vm.control.sort){
                             case "time" :
                                 current = current.sort(function(a,b){
