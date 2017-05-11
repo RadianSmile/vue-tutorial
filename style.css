@@ -92,3 +92,7 @@ nav {
       padding-right: 0.5rem; }
     .item dl dd {
       width: calc(100% - 2.5rem - 0.5rem); }
+
+.tabs {
+    padding-left: 30px;
+}
